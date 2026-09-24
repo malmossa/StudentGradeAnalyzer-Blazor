@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject IJSRuntime JS
 
 <PageTitle>Home</PageTitle>
 
@@ -21,31 +22,43 @@
 
                     <div class="col-12">
                         <label for="studentName" class="form-label">Student Name</label>
-                        <input type="text" class="form-control" id="studentName" placeholder="Enter student name..." />
+                        <input type="text" class="form-control" id="studentName"
+                               placeholder="Enter student name..."
+                               @bind="studentName" />
                     </div>
 
                     <div class="col">
                         <label for="grade1" class="form-label">Grade 1</label>
-                        <input type="number" class="form-control" id="grade1" placeholder="0-100" />
+                        <input type="number" class="form-control" id="grade1"
+                               placeholder="0-100"
+                               @bind="grade1" />
                     </div>
 
                     <div class="col">
                         <label for="grade2" class="form-label">Grade 2</label>
-                        <input type="number" class="form-control" id="grade2" placeholder="0-100" />
+                        <input type="number" class="form-control" id="grade2"
+                               placeholder="0-100"
+                               @bind="grade2" />
                     </div>
                     <div class="col">
                         <label for="grade3" class="form-label">Grade 3</label>
-                        <input type="number" class="form-control" id="grade3" placeholder="0-100" />
+                        <input type="number" class="form-control" id="grade3"
+                               placeholder="0-100"
+                               @bind="grade3" />
                     </div>
 
                     <div class="col">
                         <label for="grade4" class="form-label">Grade 4</label>
-                        <input type="number" class="form-control" id="grade4" placeholder="0-100" />
+                        <input type="number" class="form-control" id="grade4"
+                               placeholder="0-100"
+                               @bind="grade4" />
                     </div>
 
                     <div class="col">
                         <label for="grade5" class="form-label">Grade 5</label>
-                        <input type="number" class="form-control" id="grade5" placeholder="0-100" />
+                        <input type="number" class="form-control" id="grade5"
+                               placeholder="0-100"
+                               @bind="grade5" />
                     </div>
 
                 </div>
@@ -70,7 +83,7 @@
         </div>
 
         <div class="row d-flex justify-content-center my-4">
-            <button type="button" class="btn btn-primary col-4 py-2">
+            <button type="button" class="btn btn-primary col-4 py-2" @onclick="Analyze">
                 <i class="bi bi-bar-chart-fill me-2"></i>
                 Analyze Grades
             </button>
@@ -86,9 +99,18 @@
                 <i class="bi bi-bar-chart-fill text-primary me-2"></i>
                 Results
             </h5>
-            <p class="text-secondary mb-4">
-                Your grade analysis will appear here.
-            </p>
+            @if (savedStudentName.Length > 0)
+            {
+                <p class="text-secondary mb-4">
+                    Grade analysis for <strong>@savedStudentName</strong>
+                </p>
+            }
+            else
+            {
+                <p class="text-secondary mb-4">
+                    Your grade analysis will appear here.
+                </p>
+            }
         </div>
 
         <div class="row g-2">
@@ -98,7 +120,14 @@
                         <i class="bi bi-calculator-fill fs-4 me-3"></i>
                         <div>
                             <div class="small">Average</div>
-                            <div class="fw-bold fs-5">--</div>
+                            @if (average > 0)
+                            {
+                                <div class="fw-bold fs-5">@average.ToString("F2")</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold fs-5">--</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -109,7 +138,14 @@
                         <i class="bi bi-arrow-up-circle-fill fs-4 me-3"></i>
                         <div>
                             <div class="small">Highest Grade</div>
-                            <div class="fw-bold fs-5">--</div>
+                            @if (highestGrade > 0)
+                            {
+                                <div class="fw-bold fs-5">@highestGrade.ToString("F2")</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold fs-5">--</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -120,7 +156,14 @@
                         <i class="bi bi-arrow-down-circle-fill fs-4 me-3"></i>
                         <div>
                             <div class="small">Lowest Grade</div>
-                            <div class="fw-bold fs-5">--</div>
+                            @if (lowestGrade > 0)
+                            {
+                                <div class="fw-bold fs-5">@lowestGrade.ToString("F2")</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold fs-5">--</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -131,7 +174,14 @@
                         <i class="bi bi-mortarboard-fill fs-4 me-3"></i>
                         <div>
                             <div class="small">Letter Grade</div>
-                            <div class="fw-bold fs-5">--</div>
+                            @if (letterGrade != '-')
+                            {
+                                <div class="fw-bold fs-5">@letterGrade</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold fs-5">--</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -142,7 +192,14 @@
                         <i class="bi bi-check-circle-fill fs-4 me-3"></i>
                         <div>
                             <div class="small">Passing Grades</div>
-                            <div class="fw-bold fs-5">--</div>
+                            @if (passingGrades > 0)
+                            {
+                                <div class="fw-bold fs-5">@passingGrades</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold fs-5">--</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -153,18 +210,39 @@
                         <i class="bi bi-x-circle-fill fs-4 me-3"></i>
                         <div>
                             <div class="small">Falling Grades</div>
-                            <div class="fw-bold fs-5">--</div>
+                            @if (fallingGrades > 0)
+                            {
+                                <div class="fw-bold fs-5">@fallingGrades</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold fs-5">--</div>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="alert custom-yellow">
+                <div class="alert custom-yellow position-relative overflow-hidden">
                     <div class="d-flex align-items-center">
                         <i class="bi bi-trophy-fill fs-4 me-3"></i>
                         <div>
                             <div class="small">Status</div>
-                            <div class="fw-bold fs-5">--</div>
+                            @if (average >= 60)
+                            {
+                                <div class="fw-bold fs-5">PASS</div>
+
+                                <canvas id="pass-confetti"></canvas>
+                            }
+                            else if (average < 60 && average > 0)
+                            {
+                                <div class="fw-bold fs-5">FAIL</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold fs-5">--</div>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -181,4 +259,156 @@
     </div>
 </div>
 
+
+@code {
+    string studentName = string.Empty;
+    string savedStudentName = string.Empty;
+
+    double grade1;
+    double grade2;
+    double grade3;
+    double grade4;
+    double grade5;
+
+    double average;
+    double highestGrade;
+    double lowestGrade;
+    char letterGrade = '-';
+    int passingGrades = 0;
+    int fallingGrades = 0;
+
+    
+    void Analyze()
+    {
+        /* Save the student name */
+        savedStudentName = studentName;
+
+        /* Get the average */
+        average = (grade1 + grade2 + grade3 + grade4 + grade5) / 5;
+
+        /* Get the highest grade*/
+        highestGrade = grade1;
+
+        if (grade2 > highestGrade)
+        {
+            highestGrade = grade2;
+        }
+        if (grade3 > highestGrade)
+        {
+            highestGrade = grade3;
+        }
+        if (grade4 > highestGrade)
+        {
+            highestGrade = grade4;
+        }
+        if (grade5 > highestGrade)
+        {
+            highestGrade = grade5;
+        }
+
+        /* Get the lowest grade */
+        lowestGrade = grade1;
+
+        if (grade2 < lowestGrade)
+        {
+            lowestGrade = grade2;
+        }
+        if (grade3 < lowestGrade)
+        {
+            lowestGrade = grade3;
+        }
+        if (grade4 < lowestGrade)
+        {
+            lowestGrade = grade4;
+        }
+        if (grade5 < lowestGrade)
+        {
+            lowestGrade = grade5;
+        }
+
+        /* Get letter grade */
+
+        if (average >= 90)
+        {
+            letterGrade = 'A';
+        }
+
+        else if (average >= 80)
+        {
+            letterGrade = 'B';
+        }
+
+        else if (average >= 70)
+        {
+            letterGrade = 'C';
+        }
+
+        else if (average >= 60)
+        {
+            letterGrade = 'D';
+        }
+        else
+        {
+            letterGrade = 'F';
+        }
+
+        /* Get passing grades */
+
+        if (grade1 >= 60)
+        {
+            passingGrades++;
+        }
+        if (grade2 >= 60)
+        {
+            passingGrades++;
+        }
+        if (grade3 >= 60)
+        {
+            passingGrades++;
+        }
+        if (grade4 >= 60)
+        {
+            passingGrades++;
+        }
+        if (grade5 >= 60)
+        {
+            passingGrades++;
+        }
+
+        /* Get falling grades */
+        if (grade1 < 60)
+        {
+            fallingGrades++;
+        }
+        if (grade2 < 60)
+        {
+            fallingGrades++;
+        }
+        if (grade3 < 60)
+        {
+            fallingGrades++;
+        }
+        if (grade4 < 60)
+        {
+            fallingGrades++;
+        }
+        if (grade5 < 60)
+        {
+            fallingGrades++;
+        }
+
+
+        clearInputs();
+    }
+
+    void clearInputs()
+    {
+        studentName = string.Empty;
+        grade1 = 0;
+        grade2 = 0;
+        grade3 = 0;
+        grade4 = 0;
+        grade5 = 0;
+    }
+}
 
